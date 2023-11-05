@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EasyCashIdentityProjectDataAccessLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class mignewe : Migration
+    public partial class mig_new : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -53,6 +53,20 @@ namespace EasyCashIdentityProjectDataAccessLayer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CustomerAccountProcesses",
+                columns: table => new
+                {
+                    CustomerAccountProcessId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProcessType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ProcessDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomerAccountProcesses", x => x.CustomerAccountProcessId);
                 });
 
             migrationBuilder.CreateTable(
@@ -161,6 +175,28 @@ namespace EasyCashIdentityProjectDataAccessLayer.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "CustomerAccounts",
+                columns: table => new
+                {
+                    CustomerAccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CustomerAccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerAccountCurrency = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerAccountBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    BankBranch = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomerAccounts", x => x.CustomerAccountId);
+                    table.ForeignKey(
+                        name: "FK_CustomerAccounts_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -199,6 +235,11 @@ namespace EasyCashIdentityProjectDataAccessLayer.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomerAccounts_AppUserId",
+                table: "CustomerAccounts",
+                column: "AppUserId");
         }
 
         /// <inheritdoc />
@@ -218,6 +259,12 @@ namespace EasyCashIdentityProjectDataAccessLayer.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "CustomerAccountProcesses");
+
+            migrationBuilder.DropTable(
+                name: "CustomerAccounts");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
