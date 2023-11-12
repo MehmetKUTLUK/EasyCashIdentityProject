@@ -42,26 +42,28 @@ namespace EasyCashIdentityProjectPresentationLayer.Controllers
                 };
                 var result = await _userManager.CreateAsync(appUser, appUserRegisterDto.Password);
                 if (result.Succeeded) 
-                { 
-                    MimeMessage mimeMessage = new MimeMessage();
-                    MailboxAddress mailboxAddressFrom = new MailboxAddress("PARA PARA ADMİN", "mehmetktlk12@gmail.com");
-                    MailboxAddress mailboxAddressTo = new MailboxAddress("User", appUser.Email);
-                    mimeMessage.From.Add(mailboxAddressFrom);
-                    mimeMessage.To.Add(mailboxAddressTo);
-                    var bodyBuilder = new BodyBuilder();
-                    bodyBuilder.TextBody = "Kayıt işlemini gerçekleştirmek için onay kodunuz : " + code;
-                    mimeMessage.Body=bodyBuilder.ToMessageBody();
-                    mimeMessage.Subject = "PARA PARA ONAY KODU";
-                    SmtpClient Client= new SmtpClient();
-                    Client.Connect("smtp.gmail.com", 587, false);
-                    Client.Authenticate("mehmetktlk12@gmail.com", "alsfmmlotssazgxu");
-                    Client.Send(mimeMessage);
-                    Client.Disconnect(true);
+                { if (appUserRegisterDto.Password == appUserRegisterDto.ConfirmPassword)
+                    {
+                        MimeMessage mimeMessage = new MimeMessage();
+                        MailboxAddress mailboxAddressFrom = new MailboxAddress("PARA PARA ADMİN", "mehmetktlk12@gmail.com");
+                        MailboxAddress mailboxAddressTo = new MailboxAddress("User", appUser.Email);
+                        mimeMessage.From.Add(mailboxAddressFrom);
+                        mimeMessage.To.Add(mailboxAddressTo);
+                        var bodyBuilder = new BodyBuilder();
+                        bodyBuilder.TextBody = "Kayıt işlemini gerçekleştirmek için onay kodunuz : " + code;
+                        mimeMessage.Body = bodyBuilder.ToMessageBody();
+                        mimeMessage.Subject = "PARA PARA ONAY KODU";
+                        SmtpClient Client = new SmtpClient();
+                        Client.Connect("smtp.gmail.com", 587, false);
+                        Client.Authenticate("mehmetktlk12@gmail.com", "alsfmmlotssazgxu");
+                        Client.Send(mimeMessage);
+                        Client.Disconnect(true);
 
-                    TempData["Mail"] = appUserRegisterDto.Email;
-                    
-                       
-                    return RedirectToAction("Index","ConfirmMail");
+                        TempData["Mail"] = appUserRegisterDto.Email;
+
+
+                        return RedirectToAction("Index", "ConfirmMail");
+                    }
                 }
                 else
                 {
